@@ -1,0 +1,18 @@
+﻿# private keys/certs
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+*.der
+*.csr
+
+# backups / creds
+*.bak
+*credentials*.json
+*.env
+
+# secret folders
+certs/private/
+secrets/
