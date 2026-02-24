@@ -55,105 +55,142 @@ This project was developed as part of the **ST6051CEM Practical Cryptography** c
 - Python 3.9 or higher  
 - pip (Python package manager)
 
-### Step‑by‑Step
+# CertAuth-System (PKI-Based Vendor Authentication)
 
-1. **Clone the repository**  
-   ```bash
-   git clone https://github.com/yourusername/CertAuth-PKI.git
-   cd CertAuth-PKI
+CertAuth-System is a PKI-based vendor authentication platform. It provides:
+- Admin portal for vendor lifecycle management and certificate operations
+- Vendor portal for certificate-based login, document signing/verifying, encryption/decryption, and secure messaging
+- Audit logs, reporting, and a test suite for crypto and security scenarios
 
-2. **Create a virtual environment (recommended)**
-    bash
-    python -m venv venv
-    source venv/bin/activate      # On Windows: venv\Scripts\activate
+---
 
-3. **Install dependencies**
-    bash
-    pip install -r requirements.txt
+## Step-by-Step Setup
 
-4. **Run the application**
-    bash
-    python main.py
+### 1) Clone the repository
+```bash
+git clone https://github.com/manjil29adhikari/CertAuth-System.git
+cd CertAuth-System
+
+2) Create a virtual environment (recommended)
+
+Linux / macOS
+
+python -m venv venv
+source venv/bin/activate
+
+Windows (PowerShell)
+
+python -m venv venv
+venv\Scripts\Activate.ps1
+
+Windows (CMD)
+
+python -m venv venv
+venv\Scripts\activate
+
+3) Install dependencies
+pip install -r requirements.txt
+
+4) Run the application
+python main.py
+
 The main menu will open. From there you can access the Admin Portal or Vendor Portal.
 
 🚀 Usage Guide
-
-**Admin Portal**
-
-*Default credentials*
+Admin Portal
+Default credentials
 
 Username: admin
 Password: admin123
-(You will be forced to change the password on first login.)
+You will be forced to change the password on first login.
 
-*Capabilities*
+⚠️ Security note: These credentials are for local/demo use only. If you deploy beyond local testing, change credentials immediately and use environment variables / secrets management.
 
-View and manage vendors (approve, suspend, revoke).
+Capabilities
 
-Issue and revoke certificates.
+View and manage vendors (approve, suspend, revoke)
 
-View audit logs and system statistics.
+Issue and revoke certificates
 
-Send certificate expiry reminders via email (SMTP configuration required).
+View audit logs and system statistics
 
-Generate reports (vendor performance, document status, security incidents).
+Send certificate expiry reminders via email (SMTP configuration required)
 
-**Vendor Portal**
-*Registration*
-From the main menu, choose Vendor Portal → New Vendor Registration.
+Generate reports (vendor performance, document status, security incidents)
 
-Fill in the company details and click REGISTER.
+Vendor Portal
+Registration
 
-The system generates an RSA key pair, issues an X.509 certificate, and displays your credentials.
-Important: Save your private key password – it is required for login and signing.
+From the main menu, choose Vendor Portal → New Vendor Registration
 
-*Login*
-Select Vendor Portal → Existing Vendor Login.
+Fill in the company details and click REGISTER
 
-Enter your Vendor ID, upload your certificate (.crt/.pem) and private key (.key/.pem), and provide the private key password.
+The system generates an RSA key pair, issues an X.509 certificate, and displays your credentials
 
-The system validates the certificate and verifies that you own the private key (by signing a challenge). Upon success, the vendor dashboard opens.
+⚠️ Important: Save your private key password — it is required for login and signing.
 
-*Dashboard*
-Sign Document – Create a new quality document, optionally upload a file, and sign it with your private key. The signed document is stored in the database.
+Login
 
-Verify Document – Paste a document, its signature, and the signer’s public key/certificate to verify integrity and authenticity.
+Select Vendor Portal → Existing Vendor Login
 
-My Documents – View all documents you have signed, with their verification status.
+Enter your Vendor ID
 
-Shared Documents – View documents sent to you by other vendors. Decrypt and read them using your private key.
+Upload your certificate (.crt / .pem) and private key (.key / .pem)
 
-Encrypt/Decrypt – Encrypt a document for another vendor (using their public key) or decrypt a received encrypted file.
+Provide the private key password
 
-Secure Messaging – Send and receive encrypted messages between vendors.
+The system validates the certificate and verifies private key ownership (challenge signing). On success, the vendor dashboard opens.
 
-Certificate – View your own certificate details and validity status.
+Dashboard features
 
-Profile – See your registered information and contact admin.
+Sign Document — Create a new document (optionally upload a file) and sign it with your private key. Stored in the database.
 
-**🧪 Testing**
-The project includes a suite of unit tests that verify cryptographic operations and simulate security attacks.
+Verify Document — Paste a document + signature + signer’s public key/certificate to verify integrity and authenticity.
 
-*Run All Tests*
-bash
+My Documents — View your signed documents and verification status.
+
+Shared Documents — View documents shared by other vendors. Decrypt/read using your private key.
+
+Encrypt/Decrypt — Encrypt for another vendor (their public key) or decrypt received encrypted files.
+
+Secure Messaging — Send/receive encrypted messages between vendors.
+
+Certificate — View your certificate details and validity status.
+
+Profile — View your registered info and contact admin.
+
+🧪 Testing
+
+This project includes unit tests to verify cryptographic operations and simulate security scenarios.
+
+Run all tests
 python -m unittest discover tests
-Individual Test Files
-tests/test_crypto.py – tests key generation, signing, verification, encryption/decryption.
+Individual test files
 
-tests/test_security.py – multi‑user simulations and attack scenarios (revoked certificate, invalid signature, replay attempts).
+tests/test_crypto.py — key generation, signing, verification, encryption/decryption
 
-**🤝 Contributing**
-Contributions are welcome! If you would like to extend CertAuth, please follow these guidelines:
+tests/test_security.py — multi-user simulations and attack scenarios (revoked cert, invalid signature, replay attempts)
 
-Fork the repository.
+🤝 Contributing
 
-Create a feature branch (git checkout -b feature/amazing-feature).
+Contributions are welcome!
 
-Commit your changes (git commit -m 'Add some amazing feature').
+Fork the repository
 
-Push to the branch (git push origin feature/amazing-feature).
+Create a feature branch
 
-Open a Pull Request.
+git checkout -b feature/amazing-feature
 
-Please ensure your code follows the existing style, includes docstrings, and adds appropriate tests.
+Commit your changes
 
+git commit -m "Add some amazing feature"
+
+Push to your branch
+
+git push origin feature/amazing-feature
+
+Open a Pull Request
+
+Please follow the existing style, include docstrings, and add/update tests where appropriate.
+
+::contentReference[oaicite:0]{index=0}
