@@ -97,8 +97,8 @@ class EncryptionManager:
             # print(f"🔍 DECRYPT DEBUG: Password provided: {'Yes' if password else 'No'}")
             if password:
                 # print(f"🔍 DECRYPT DEBUG: Password length: {len(password)}")
-                print(f"🔍 DECRYPT DEBUG: Password first 3 chars: {password[:3]}")
-            
+                pass
+                
             # Load private key
             try:
                 # print("🔍 DECRYPT DEBUG: Trying to load private key without password...")
@@ -147,9 +147,9 @@ class EncryptionManager:
             if encrypted_data.get('salt'):
                 try:
                     salt = base64.b64decode(encrypted_data['salt'])
-                    print(f"✅ DECRYPT DEBUG: salt decoded, length: {len(salt)} bytes")
+                    salt
                 except:
-                    print(f"⚠️ DECRYPT DEBUG: salt present but invalid, ignoring")
+                    salt = None
             
             # Decrypt symmetric key with RSA private key
             # print("🔍 DECRYPT DEBUG: Attempting to decrypt symmetric key with RSA...")
