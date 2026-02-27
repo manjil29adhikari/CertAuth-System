@@ -1,196 +1,247 @@
-# CertAuth – PKI Vendor Authentication System
+# CertAuth – Vendor Authentication System (PKI)
 
-**CertAuth** is a Public Key Infrastructure (PKI) based tool that provides authentication, data integrity, and confidentiality for vendors in a supply chain.  
-It allows vendors to register, obtain X.509 digital certificates, sign quality documents, and securely share encrypted files or messages with other vendors.
+**CertAuth** is a Public Key Infrastructure (PKI) based application that provides **vendor identity assurance**, **document integrity**, **revocation enforcement**, and **confidential exchange** for vendor ecosystems.  
+Vendors can register and receive **X.509 certificates**, digitally sign documents, verify authenticity, securely share encrypted files, and exchange secure messages. Administrators manage vendor lifecycle controls, certificate issuance/revocation, and audit evidence.
 
-This project was developed as part of the **ST6051CEM Practical Cryptography** coursework at Softwarica College.
-
----
-
-## ✨ Features
-
-- **PKI‑based Vendor Registration & Login**  
-  – RSA key pair generation (2048‑bit) with per‑vendor random passwords.  
-  – X.509 certificate issuance by a self‑signed Root CA (4096‑bit).  
-  – Certificate‑based authentication (prove possession of private key).
-
-- **Digital Signatures**  
-  – Sign documents (e.g., quality certificates) using RSA‑PSS with SHA‑256.  
-  – Verify signatures with the signer’s public key.  
-  – All signed documents are stored in a SQLite database with an audit trail.
-
-- **Encryption & Confidentiality**  
-  – Hybrid encryption: AES‑256‑CBC for document content, RSA‑OAEP for the symmetric key.  
-  – Optional password‑based key derivation (PBKDF2) for additional security.  
-  – Encrypted file sharing between vendors (stored in the database).  
-  – Secure end‑to‑end messaging with digital signatures.
-
-- **Security Best Practices**  
-  – Private keys are stored encrypted (PKCS#8, password‑protected).  
-  – Certificate revocation list (CRL) and database flags for revoked certificates.  
-  – Audit logging of all critical actions (login, signing, revocation, etc.).  
-  – Tests simulate common attacks (revoked certificate usage, invalid signatures).
-
-- **Administration**  
-  – Admin panel to manage vendors, certificates, and audit logs.  
-  – Approve/revoke vendors and certificates.  
-  – Generate reports and send expiry reminders.
+Developed for **ST6051CEM Practical Cryptography** at **Softwarica College of IT & E-Commerce (in collaboration with Coventry University)**.
 
 ---
 
-## 🛠️ Technology Stack
+## ✨ Key Features
 
-- **Language:** Python 3.9+  
+### PKI-based Vendor Identity
+- RSA key pair generation (2048-bit) with **password-encrypted PKCS#8** private keys.
+- X.509 certificate issuance by a **self-signed Root CA** (4096-bit).
+- Vendor lifecycle status: pending/active/suspended/revoked.
+
+### Digital Signatures (Integrity + Evidence)
+- Sign documents using **RSA-PSS + SHA-256**.
+- Verify signatures and detect tampering/forgery.
+- Signed document records stored in SQLite for traceability.
+
+### Confidential Sharing (Hybrid Encryption)
+- Hybrid encryption:
+  - **AES-CBC** for content encryption
+  - **RSA-OAEP** for encrypting the AES key
+- Encrypted shared documents stored in SQLite.
+
+### Secure Messaging
+- Encrypted vendor-to-vendor messages stored in SQLite.
+
+### Revocation + Auditability
+- Revocation enforced using CRL tracking and lifecycle status.
+- Audit logging for security-relevant actions (admin + vendor).
+
+---
+
+## 🧱 Technology Stack
+- **Language:** Python 3.x  
 - **GUI:** CustomTkinter  
-- **Cryptography:** `cryptography` library  
-- **Database:** SQLite3  
-- **Testing:** `unittest` (built‑in)
+- **Crypto:** `cryptography` library  
+- **Database:** SQLite  
+- **Testing:** `unittest`
 
 ---
 
-## 📦 Installation
+# ✅ Run Options
+
+## Option A (Recommended): Run with Docker (GUI in Browser)
+
+This option allows your lecturer to run CertAuth with **one command**, without installing Python dependencies.  
+The GUI opens in a browser using **noVNC**.
 
 ### Prerequisites
-
-- Python 3.9 or higher  
-- pip (Python package manager)
-
-# CertAuth-System (PKI-Based Vendor Authentication)
-
-CertAuth-System is a PKI-based vendor authentication platform. It provides:
-- Admin portal for vendor lifecycle management and certificate operations
-- Vendor portal for certificate-based login, document signing/verifying, encryption/decryption, and secure messaging
-- Audit logs, reporting, and a test suite for crypto and security scenarios
-
----
-
-## Step-by-Step Setup
+- Docker Desktop (Windows/Mac) or Docker Engine (Linux)
 
 ### 1) Clone the repository
 ```bash
 git clone https://github.com/manjil29adhikari/CertAuth-System.git
 cd CertAuth-System
 
-2) Create a virtual environment (recommended)
+2) (Recommended) Create an exports folder on host
+This folder is used to store downloaded vendor credential files and PEM files outside the container:
+mkdir exports
 
-Linux / macOS
+3) Build and run
+docker compose up --build
 
-python -m venv venv
-source venv/bin/activate
+4) Open the GUI
+Open in a browser:
+http://localhost:6080/vnc.html
+
+5) Saving files while using Docker (important)
+When CertAuth asks you to save a file (credential document / key / certificate), save it inside the container to:
+✅ /app/exports
+Because ./exports is mounted to /app/exports, the saved files will appear on your host machine in:
+✅ ./exports
+Stop Docker
+docker compose down
+
+
+
+Option B: Run Locally with Python
+Prerequisites:
+=>Python 3.9+ (recommended)
+=> pip
+
+1) Create a virtual environment (recommended)
 
 Windows (PowerShell)
-
 python -m venv venv
 venv\Scripts\Activate.ps1
 
 Windows (CMD)
-
 python -m venv venv
 venv\Scripts\activate
 
-3) Install dependencies
+Linux/macOS
+python -m venv venv
+source venv/bin/activate
+
+2) Install dependencies
 pip install -r requirements.txt
 
-4) Run the application
+3) Run the application
 python main.py
 
-The main menu will open. From there you can access the Admin Portal or Vendor Portal.
 
 🚀 Usage Guide
-Admin Portal
-Default credentials
+
+**Admin Portal**
+
+*Default credentials*
 
 Username: admin
 Password: admin123
-You will be forced to change the password on first login.
+(You will be forced to change the password on first login.)
 
-⚠️ Security note: These credentials are for local/demo use only. If you deploy beyond local testing, change credentials immediately and use environment variables / secrets management.
 
-Capabilities
+Admin manages vendor approvals, suspension/revocation, certificates, CRL enforcement, and audit review.
 
-View and manage vendors (approve, suspend, revoke)
+Common actions:
 
-Issue and revoke certificates
+Approve/activate vendor
 
-View audit logs and system statistics
+Suspend vendor (temporary restriction)
 
-Send certificate expiry reminders via email (SMTP configuration required)
+Revoke vendor certificate (CRL enforcement)
 
-Generate reports (vendor performance, document status, security incidents)
+Review audit trail and generate reports
 
 Vendor Portal
-Registration
+1) New Vendor Registration (Credential Document)
 
-From the main menu, choose Vendor Portal → New Vendor Registration
+From the main menu, choose:
 
-Fill in the company details and click REGISTER
+Vendor Portal → New Vendor Registration
 
-The system generates an RSA key pair, issues an X.509 certificate, and displays your credentials
+After submitting the registration form, CertAuth generates a Vendor Credential Document (text file).
+This credential file contains everything the vendor needs for login and cryptographic operations:
 
-⚠️ Important: Save your private key password — it is required for login and signing.
+Vendor ID
 
-Login
+Private Key Password
 
-Select Vendor Portal → Existing Vendor Login
+PRIVATE KEY (PEM block)
 
-Enter your Vendor ID
+CERTIFICATE (PEM block)
 
-Upload your certificate (.crt / .pem) and private key (.key / .pem)
+✅ These values are required for vendor login and for signing/decrypting operations.
+⚠️ Keep the credential file secure because it contains sensitive material.
 
-Provide the private key password
+If running in Docker: save this credential document to:
 
-The system validates the certificate and verifies private key ownership (challenge signing). On success, the vendor dashboard opens.
+/app/exports
+so it appears on your host in ./exports.
 
-Dashboard features
+2) Prepare Login Files (Split the Credential Document into 2 PEM files)
 
-Sign Document — Create a new document (optionally upload a file) and sign it with your private key. Stored in the database.
+Before logging in, the vendor must create two separate PEM files from the credential document.
 
-Verify Document — Paste a document + signature + signer’s public key/certificate to verify integrity and authenticity.
+A) Create the Private Key file (.pem)
 
-My Documents — View your signed documents and verification status.
+Open the credential document in a text editor.
 
-Shared Documents — View documents shared by other vendors. Decrypt/read using your private key.
+Copy the full block starting from:
 
-Encrypt/Decrypt — Encrypt for another vendor (their public key) or decrypt received encrypted files.
+-----BEGIN ENCRYPTED PRIVATE KEY-----
 
-Secure Messaging — Send/receive encrypted messages between vendors.
+and ending at:
 
-Certificate — View your certificate details and validity status.
+-----END ENCRYPTED PRIVATE KEY-----
 
-Profile — View your registered info and contact admin.
+Paste into a new text file and save as:
+
+vendor_private_key.pem
+
+B) Create the Certificate file (.pem)
+
+In the same credential document, copy the full block starting from:
+
+-----BEGIN CERTIFICATE-----
+
+and ending at:
+
+-----END CERTIFICATE-----
+
+Paste into a new text file and save as:
+
+vendor_certificate.pem
+
+✅ After this step, the vendor should have:
+
+vendor_private_key.pem
+
+vendor_certificate.pem
+
+If running in Docker: store these files in:
+
+/app/exports
+so they appear on your host in ./exports.
+
+3) Vendor Login
+
+From the main menu, choose:
+
+Vendor Portal → Existing Vendor Login
+
+Provide:
+
+Vendor ID (from credential document)
+
+Private Key Password (from credential document)
+
+Select/upload:
+
+vendor_private_key.pem
+
+vendor_certificate.pem
+
+The system validates certificate trust (issuer/validity/revocation) and verifies private key ownership before granting access.
 
 🧪 Testing
+This project uses unittest and includes the combined test suite:
+tests/test_all.py
+Run tests
+python -m unittest tests/test_all.py
+Or run discovery
+python -m unittest discover -s tests
 
-This project includes unit tests to verify cryptographic operations and simulate security scenarios.
+What is validated:
+RSA key generation and encrypted private key handling
+RSA-PSS signing and signature verification (tamper detection)
+Hybrid encryption (encrypt/decrypt)
+Multi-user workflows and adversarial checks:
+tampering detection
+impersonation attempt fails verification
+revocation enforcement via CRL/DB logic
 
-Run all tests
-python -m unittest discover tests
-Individual test files
+📁 Project Structure (High-level)
 
-tests/test_crypto.py — key generation, signing, verification, encryption/decryption
-
-tests/test_security.py — multi-user simulations and attack scenarios (revoked cert, invalid signature, replay attempts)
-
-🤝 Contributing
-
-Contributions are welcome!
-
-Fork the repository
-
-Create a feature branch
-
-git checkout -b feature/amazing-feature
-
-Commit your changes
-
-git commit -m "Add some amazing feature"
-
-Push to your branch
-
-git push origin feature/amazing-feature
-
-Open a Pull Request
-
-Please follow the existing style, include docstrings, and add/update tests where appropriate.
-
-::contentReference[oaicite:0]{index=0}
+gui/ – UI workflows (Admin Panel, Vendor Portal, Main Menu)
+crypto/ – CA manager, certificate engine, encryption manager
+database/ – SQLite schema and persistence
+auth/ – Admin authentication logic
+certs/ – Root CA and CRL artifacts
+tests/ – Automated tests (test_all.py)
+main.py – Entry point
