@@ -1,0 +1,15 @@
+services:
+  certauth:
+    build: .
+    ports:
+      - "6080:6080"
+    tty: true
+    stdin_open: true
+    volumes:
+      - certauth_data:/app/database
+      - certauth_certs:/app/certs
+      - ./exports:/app/exports   
+
+volumes:
+  certauth_data:
+  certauth_certs:

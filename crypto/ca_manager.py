@@ -16,6 +16,28 @@ import base64
 # Add parent directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from datetime import timezone
+
+def _get_cert_validity_utc(cert):
+    """
+    Compatibility helper for cryptography versions:
+    - Newer: cert.not_valid_before_utc / not_valid_after_utc
+    - Older: cert.not_valid_before / not_valid_after (naive datetimes)
+    """
+    if hasattr(cert, "not_valid_before_utc") and hasattr(cert, "not_valid_after_utc"):
+        return cert.not_valid_before_utc, cert.not_valid_after_utc
+
+    # Older versions
+    nvb = cert.not_valid_before
+    nva = cert.not_valid_after
+
+    # Make timezone-aware (UTC)
+    if nvb.tzinfo is None:
+        nvb = nvb.replace(tzinfo=timezone.utc)
+    if nva.tzinfo is None:
+        nva = nva.replace(tzinfo=timezone.utc)
+
+    return nvb, nva
 
 class CertificateAuthorityManager:
     def __init__(self, ca_cert_path="certs/root_ca.crt", ca_key_path="certs/root_ca.key",
@@ -212,18 +234,19 @@ class CertificateAuthorityManager:
         # Convert to PEM
         certificate_pem = certificate.public_bytes(serialization.Encoding.PEM).decode()
 
-        # Create certificate info
+        nvb, nva = _get_cert_validity_utc(certificate)
+
         cert_info = {
-            'serial_number': str(serial_number),
-            'vendor_id': vendor_data.get('vendor_id', ''),
-            'subject': str(certificate.subject),
-            'issuer': str(certificate.issuer),
-            'not_valid_before': certificate.not_valid_before_utc.isoformat(),
-            'not_valid_after': certificate.not_valid_after_utc.isoformat(),
-            'certificate_pem': certificate_pem,
-            'fingerprint': self.get_certificate_fingerprint(certificate),
-            'status': 'active'
-        }
+                'serial_number': str(serial_number),
+                'vendor_id': vendor_data.get('vendor_id', ''),
+                'subject': str(certificate.subject),
+                'issuer': str(certificate.issuer),
+                'not_valid_before': nvb.isoformat(),
+                'not_valid_after': nva.isoformat(),
+                'certificate_pem': certificate_pem,
+                'fingerprint': self.get_certificate_fingerprint(certificate),
+                'status': 'active'
+}
 
         print(f"✅ Certificate issued to {vendor_data['company_name']} (Serial: {serial_number})")
         return cert_info
@@ -246,11 +269,12 @@ class CertificateAuthorityManager:
                 default_backend()
             )
 
-            # 1. Check expiry (use UTC properties)
             current_time = datetime.now(timezone.utc)
-            if current_time < certificate.not_valid_before_utc:
+            nvb, nva = _get_cert_validity_utc(certificate)
+
+            if current_time < nvb:
                 return False, "Certificate not yet valid"
-            if current_time > certificate.not_valid_after_utc:
+            if current_time > nva:
                 return False, "Certificate expired"
 
             # 2. Check if issued by our CA
@@ -413,16 +437,17 @@ class CertificateAuthorityManager:
         if not self.ca_certificate:
             return None
 
+        nvb, nva = _get_cert_validity_utc(self.ca_certificate)
+
         return {
             'subject': str(self.ca_certificate.subject),
             'issuer': str(self.ca_certificate.issuer),
             'serial': str(self.ca_certificate.serial_number),
-            'valid_from': self.ca_certificate.not_valid_before_utc.isoformat(),
-            'valid_to': self.ca_certificate.not_valid_after_utc.isoformat(),
+            'valid_from': nvb.isoformat(),
+            'valid_to': nva.isoformat(),
             'fingerprint': self.get_certificate_fingerprint(self.ca_certificate),
             'has_crl': os.path.exists(self.crl_path)
-        }
-
+}
 
 # Alternative test function that doesn't import certificate_engine
 def test_ca_manager_simple():

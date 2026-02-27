@@ -215,7 +215,9 @@ class MainMenu:
         selection_window.geometry("500x400")
         selection_window.resizable(False, False)
         selection_window.transient(self.window)
-        selection_window.grab_set()
+        selection_window.update_idletasks()
+        selection_window.deiconify()
+        selection_window.after(200, selection_window.grab_set)
         
         # Center
         selection_window.update_idletasks()
@@ -310,7 +312,7 @@ class MainMenu:
         docs_window.geometry("700x600")
         docs_window.resizable(False, False)
         docs_window.transient(self.window)
-        docs_window.grab_set()
+        docs_window.after(200, docs_window.grab_set)
         
         # Center
         docs_window.update_idletasks()

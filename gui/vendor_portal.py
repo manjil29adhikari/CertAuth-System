@@ -330,7 +330,9 @@ class VendorRegistrationWindow:
         success_window.geometry("700x650")
         success_window.resizable(False, False)
         success_window.transient(self.window)
-        success_window.grab_set()
+        success_window.update_idletasks()
+        success_window.deiconify()
+        success_window.after(200, success_window.grab_set)
         
         ctk.CTkLabel(
             success_window,
@@ -1874,7 +1876,9 @@ The document has been:
                 details_window.title(f"Document Details - {doc_id}")
                 details_window.geometry("900x700")
                 details_window.transient(self.window)
-                details_window.grab_set()
+                details_window.update_idletasks()
+                details_window.deiconify()
+                details_window.after(200, details_window.grab_set)
                 
                 # Create notebook for tabs
                 notebook = ctk.CTkTabview(details_window)
@@ -2458,7 +2462,9 @@ The document has been:
             view_window.title(f"Shared Document - {share_id}")
             view_window.geometry("800x600")
             view_window.transient(self.window)
-            view_window.grab_set()
+            view_window.update_idletasks()
+            view_window.deiconify()
+            view_window.after(200, view_window.grab_set)
             
             ctk.CTkLabel(
                 view_window,
@@ -2886,7 +2892,7 @@ The document has been:
             select_window.title("Select Recipient Vendor")
             select_window.geometry("500x600")
             select_window.transient(self.window)
-            select_window.grab_set()
+            select_window.after(200, select_window.grab_set)
             
             ctk.CTkLabel(
                 select_window,
@@ -3336,7 +3342,7 @@ The document has been:
         share_window.title("Share Encrypted Document")
         share_window.geometry("500x400")
         share_window.transient(self.window)
-        share_window.grab_set()
+        share_window.after(200, share_window.grab_set)
         
         ctk.CTkLabel(
             share_window,
@@ -3596,7 +3602,7 @@ The document has been:
         share_dec_window.title("Share Decrypted Document")
         share_dec_window.geometry("500x400")
         share_dec_window.transient(self.window)
-        share_dec_window.grab_set()
+        share_dec_window.after(200, share_dec_window.grab_set)
         
         ctk.CTkLabel(
             share_dec_window,
@@ -4051,7 +4057,7 @@ The document has been:
             view_window.title(f"Secure Message - {message_id}")
             view_window.geometry("600x500")
             view_window.transient(self.window)
-            view_window.grab_set()
+            view_window.after(200, view_window.grab_set)
             
             # Header with message info
             header_frame = ctk.CTkFrame(view_window, corner_radius=10)
